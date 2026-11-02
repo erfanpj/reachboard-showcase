@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reachboard — browser simulation</title>
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <p class="banner">Browser simulation only — fictional RB credits and packages. No live backend, login, or payment. Run the local Django service for HTTP-tested ownership and status rules.</p>
+  <h1>Reachboard static demo</h1>
+  <p>Filter packages, compare newsletter vs podcast, add/remove lines, then walk draft → submit → reset. Parity: Echo-only <span class="total">35</span>; Northline + Echo <span class="total">75</span>.</p>
+  <label>Filter <input id="filter" type="search" placeholder="Try Echo or Podcast"></label>
+  <section class="card compare" aria-labelledby="cmp">
+    <h2 id="cmp">Quick compare</h2>
+    <div id="compareRow"></div>
+  </section>
+  <div id="packages"></div>
+  <div class="card">
+    <p class="total" id="cartTotal">Cart total: 0 RB credits · 0 items</p>
+    <ul id="cartLines"></ul>
+    <p>Status: <strong id="status">empty cart</strong></p>
+    <button type="button" id="toDraft">Review cart → draft</button>
+    <button type="button" id="submit">Submit for payment review</button>
+    <button type="button" class="secondary" id="reset">Reset simulation</button>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+"""Fictional publisher packages — shared contract for Django seed and static demo."""
+
+from decimal import Decimal
+
+CREDIT_LABEL_EN = "RB credits"
+CREDIT_LABEL_FA = "اعتبار RB"
+
+PACKAGES = (
+    {
+        "slug": "northline-sound",
+        "title_en": "Northline Sound",
+        "title_fa": "صدای خط شمال",
+        "channel_en": "Podcast network",
+        "channel_fa": "شبکه پادکست",
+        "placement_en": "Mid-roll in a weekly regional tech show (~45k downloads/episode)",
+        "placement_fa": "میان برنامه در پادکست هفتگی فناوری (~۴۵هزار دانلود)",
+        "deliverable_en": "Host-read 60s spot + tracked show-notes link",
+        "deliverable_fa": "خوانش ۶۰ ثانیه‌ای + لینک ردیابی در یادداشت",
+        "payable": Decimal("40"),
+    },
+    {
+        "slug": "echo-weekly",
+        "title_en": "Echo Weekly",
+        "title_fa": "هفتگی اکو",
+        "channel_en": "Newsletter",
+        "channel_fa": "خبرنامه",
+        "placement_en": "Dedicated hero slot above the fold (18k verified opens)",
+        "placement_fa": "جایگاه اصلی بالای خبرنامه (~۱۸هزار باز شدن)",
+        "deliverable_en": "Logo lockup, 120-word blurb, one CTA button",
+        "deliverable_fa": "لوگو، متن ۱۲۰ کلمه‌ای، یک دکمه فراخوان",
+        "payable": Decimal("35"),
+    },
+    {
+        "slug": "harbor-post",
+        "title_en": "Harbor Post",
+        "title_fa": "پست بندر",
+        "channel_en": "Regional newspaper",
+        "channel_fa": "روزنامه منطقه‌ای",
+        "placement_en": "Quarter-page print + matching digital sidebar",
+        "placement_fa": "ربع صفحه چاپ + نوار کناری دیجیتال",
+        "deliverable_en": "Print-ready PDF + 300×250 web banner",
+        "deliverable_fa": "PDF چاپ + بنر وب ۳۰۰×۲۵۰",
+        "payable": Decimal("28"),
+    },
+    {
+        "slug": "citrus-fm",
+        "title_en": "Citrus FM",
+        "title_fa": "سیترس اف‌ام",
+        "channel_en": "FM radio",
+        "channel_fa": "رادیو FM",
+        "placement_en": "Drive-time rotation (6 spots / week)",
+        "placement_fa": "چرخش ساعات پربازدید (۶ پخش در هفته)",
+        "deliverable_en": "15s produced spot + traffic report mention",
+        "deliverable_fa": "اسپات ۱۵ ثانیه‌ای + ذکر در گزارش ترافیک",
+        "payable": Decimal("22"),
+    },
+    {
+        "slug": "ledger-daily",
+        "title_en": "Ledger Daily",
+        "title_fa": "روزنامه دفتر",
+        "channel_en": "Business daily",
+        "channel_fa": "روزنامه اقتصادی",
+        "placement_en": "Finance section footer strip (Mon–Fri)",
+        "placement_fa": "نوار پاورقی بخش مالی (دوشنبه–جمعه)",
+        "deliverable_en": "Text + monochrome logo, no animation",
+        "deliverable_fa": "متن + لوگوی تک‌رنگ، بدون انیمیشن",
+        "payable": Decimal("31"),
+    },
+    {
+        "slug": "vivid-stream",
+        "title_en": "Vivid Stream",
+        "title_fa": "استریم زنده",
+        "channel_en": "Live stream",
+        "channel_fa": "پخش زنده",
+        "placement_en": "Pre-roll on two sponsored community streams",
+        "placement_fa": "پیش‌پخش در دو استریم حمایت‌شده",
+        "deliverable_en": "20s motion bumper + chat pinned link (1 hour)",
+        "deliverable_fa": "بumper ۲۰ ثانیه + لینک سنجاق در چت (۱ ساعت)",
+        "payable": Decimal("26"),
+    },
+)

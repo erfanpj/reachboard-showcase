@@ -1,0 +1,11 @@
+{
+  "captured_at": "2026-11-02T14:00:00+01:00",
+  "origin": "http://127.0.0.1:8788",
+  "tool": "tools/capture_evidence.mjs",
+  "files": [
+    {"path": "docs/evidence/catalog-desktop-en.png", "viewport": "1280x720"},
+    {"path": "docs/evidence/catalog-mobile-fa.png", "viewport": "390x844"},
+    {"path": "docs/evidence/campaign-detail-draft-en.png", "viewport": "1280x720", "state": "draft"},
+    {"path": "docs/evidence/campaign-detail-awaiting-payment-en.png", "viewport": "1280x720", "state": "awaiting_payment"}
+  ]
+}

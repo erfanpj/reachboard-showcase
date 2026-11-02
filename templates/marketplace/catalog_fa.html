@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Reachboard — بازار داستانی{% endblock %}
+{% block content %}
+<p class="card card-accent-teal">فهرست دمو با ناشران و قیمت‌های داستانی. جمع بالای صفحه با {{ credit_label }} به‌روز می‌شود.</p>
+{% if cart_lines %}
+<section class="card card-accent-orange cart-panel">
+  <h2>سبد شما</h2>
+  <ul class="cart-lines">
+    {% for line in cart_lines %}
+    <li><strong>{{ line.package.title_fa }}</strong> — {{ line.package.payable }} {{ credit_label }}</li>
+    {% endfor %}
+  </ul>
+  <p class="cart-total-line">جمع سبد: <strong>{{ cart_total }}</strong> {{ credit_label }}</p>
+  {% if user.is_authenticated %}
+  <form method="post" action="{% url 'checkout_campaign' %}">
+    {% csrf_token %}
+    <button class="btn btn-teal" type="submit" data-testid="journey-review-cart">بازبینی سبد → پیش‌نویس</button>
+  </form>
+  {% endif %}
+</section>
+{% endif %}
+<section class="card compare-panel" aria-labelledby="compare-heading-fa">
+  <h2 id="compare-heading-fa">مقایسه دو جایگاه</h2>
+  <p class="muted">خبرنامه در برابر پادکست — همان واحد اعتبار، شکل دسترسی متفاوت.</p>
+  <div class="compare-grid">
+    {% for package in compare_packages %}
+    <article class="compare-card">
+      <h3>{{ package.title_fa }}</h3>
+      <p class="channel-tag">{{ package.channel_fa }}</p>
+      <p>{{ package.placement_fa }}</p>
+      <p class="deliverable">{{ package.deliverable_fa }}</p>
+      <p class="price">{{ package.payable }} {{ credit_label }}</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+<form class="filters" method="get">
+  <input type="search" name="q" value="{{ request.GET.q }}" placeholder="فیلتر نام یا کانال" aria-label="فیلتر ناشران">
+  <button class="btn btn-teal" type="submit">اعمال</button>
+</form>
+<div class="grid package-grid">
+  {% for package in packages %}
+  <article class="card package-card">
+    <p class="channel-tag">{{ package.channel_fa }}</p>
+    <h2>{{ package.title_fa }}</h2>
+    <p class="placement">{{ package.placement_fa }}</p>
+    <p class="deliverable">{{ package.deliverable_fa }}</p>
+    <p class="price">{{ package.payable }} {{ credit_label }}</p>
+    {% if user.is_authenticated %}
+    <form method="post" action="{% url 'cart_mutate' %}">
+      {% csrf_token %}
+      <input type="hidden" name="slug" value="{{ package.slug }}">
+      <input type="hidden" name="action" value="add">
+      <input type="hidden" name="next" value="{{ request.path }}">
+      <button class="btn btn-orange" type="submit" data-testid="add-{{ package.slug }}">افزودن به سبد</button>
+    </form>
+    {% endif %}
+  </article>
+  {% empty %}
+  <p>ناشری با این فیلتر نیست.</p>
+  {% endfor %}
+</div>
+{% endblock %}

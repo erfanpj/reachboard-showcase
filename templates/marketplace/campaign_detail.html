@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Campaign · {{ brand_name }}{% endblock %}
+{% block content %}
+<section class="card status-banner" data-testid="campaign-status-banner">
+  <p class="status-headline">{{ campaign.status_headline_en }}</p>
+  <p><span class="status-chip status-{{ campaign.status }}" data-testid="campaign-status-chip" data-campaign-status="{{ campaign.status }}">{{ campaign.get_status_display }}</span></p>
+</section>
+<section class="card" data-testid="campaign-draft-schedule">
+  <h2>Line items</h2>
+  <p>Payable total: {{ campaign.total_amount }} {{ credit_label }}</p>
+  <ul>
+    {% for item in items %}
+    <li>{{ item.package.title_en }} — {{ item.package.channel_en }} — {{ item.package.payable }} {{ credit_label }}</li>
+    {% endfor %}
+  </ul>
+  {% if campaign.status == 'draft' %}
+  <form method="post" action="{% url 'campaign_submit' campaign.pk %}">
+    {% csrf_token %}
+    <button class="btn btn-teal" type="submit" data-testid="campaign-submit-for-payment">Submit for payment review</button>
+  </form>
+  {% endif %}
+</section>
+{% if campaign.status == 'awaiting_payment' %}
+<section class="card card-accent-orange" data-testid="campaign-awaiting-payment">
+  <h2>Payment</h2>
+  <p>Wallet balance: 0 {{ credit_label }} (fictional). Payment stays disabled in this showcase.</p>
+</section>
+{% endif %}
+<section class="card" data-testid="campaign-status-history">
+  <h2>What changed</h2>
+  {% if history %}
+  <ol>
+    {% for row in history %}
+    <li data-history-scope="{{ row.scope }}">
+      <span class="history-scope">{{ row.get_scope_display }}</span>
+      {{ row.from_status|default:"—" }} → {{ row.to_status }}
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <p>No status changes yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

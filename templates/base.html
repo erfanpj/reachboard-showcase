@@ -1,0 +1,40 @@
+{% load static %}
+<!doctype html>
+<html lang="{{ html_lang|default:'en' }}" dir="{{ html_dir|default:'ltr' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ brand_name }}{% endblock %}</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="{% static 'showcase.css' %}">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="{% url 'catalog_en' %}">{{ brand_name }}</a>
+    <span class="account-chip">{{ demo_account_label }}</span>
+    {% if cart_count %}
+    <span class="cart-pill" data-testid="cart-total-header">
+      {% if locale == 'fa' %}جمع سبد: {{ cart_total }} · {{ cart_count }} مورد{% else %}Cart total: {{ cart_total }} · {{ cart_count }} item{{ cart_count|pluralize }}{% endif %}
+    </span>
+    {% endif %}
+    <nav style="margin-left:auto;display:flex;gap:0.5rem;flex-wrap:wrap;">
+      <a class="btn btn-ghost" href="{% url 'catalog_en' %}">English</a>
+      <a class="btn btn-ghost" href="{% url 'catalog_fa' %}">فارسی</a>
+      {% if user.is_authenticated %}
+      <form method="post" action="{% url 'demo_reset' %}">{% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <button class="btn btn-ghost" type="submit">Reset demo</button>
+      </form>
+      {% else %}
+      <a class="btn btn-teal" href="{% url 'demo_login' %}?next={{ request.path }}">Sign in</a>
+      {% endif %}
+    </nav>
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer">
+    <p><strong>{{ brand_name }}</strong> · {{ showcase_disclaimer }}</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Demo sign-in · {{ brand_name }}{% endblock %}
+{% block content %}
+<section class="card card-accent-teal">
+  <h1>Reachboard demo sign-in</h1>
+  <p>Fictional showcase accounts only. No production login, SMS, or payment.</p>
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ safe_next }}">
+    <p><label>Username <input name="username" value="demo_advertiser" autocomplete="username"></label></p>
+    <p><label>Password <input name="password" type="password" autocomplete="current-password" placeholder="see README"></label></p>
+    <button class="btn btn-teal" type="submit">Sign in</button>
+  </form>
+</section>
+{% endblock %}

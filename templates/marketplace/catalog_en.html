@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Reachboard — fictional marketplace{% endblock %}
+{% block content %}
+<p class="card card-accent-teal">Fictional demo catalogue. Prices are server totals in {{ credit_label }} — the header updates when you add packages.</p>
+{% if cart_lines %}
+<section class="card card-accent-orange cart-panel" data-testid="cart-summary">
+  <h2>Your cart</h2>
+  <ul class="cart-lines">
+    {% for line in cart_lines %}
+    <li><strong>{{ line.package.title_en }}</strong> — {{ line.package.payable }} {{ credit_label }}</li>
+    {% endfor %}
+  </ul>
+  <p class="cart-total-line">Your cart total is <strong>{{ cart_total }}</strong> {{ credit_label }}.</p>
+  {% if user.is_authenticated %}
+  <form method="post" action="{% url 'checkout_campaign' %}">
+    {% csrf_token %}
+    <button class="btn btn-teal" type="submit" data-testid="journey-review-cart">Review cart → draft</button>
+  </form>
+  {% endif %}
+</section>
+{% endif %}
+<section class="card compare-panel" aria-labelledby="compare-heading">
+  <h2 id="compare-heading">Compare two placements</h2>
+  <p class="muted">Newsletter hero vs podcast mid-roll — same credit unit, different reach shape.</p>
+  <div class="compare-grid">
+    {% for package in compare_packages %}
+    <article class="compare-card">
+      <h3>{{ package.title_en }}</h3>
+      <p class="channel-tag">{{ package.channel_en }}</p>
+      <p>{{ package.placement_en }}</p>
+      <p class="deliverable">{{ package.deliverable_en }}</p>
+      <p class="price">{{ package.payable }} {{ credit_label }}</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+<form class="filters" method="get">
+  <input type="search" name="q" value="{{ request.GET.q }}" placeholder="Filter by name or channel" aria-label="Filter publishers">
+  <button class="btn btn-teal" type="submit">Filter</button>
+</form>
+<div class="grid package-grid">
+  {% for package in packages %}
+  <article class="card package-card">
+    <p class="channel-tag">{{ package.channel_en }}</p>
+    <h2>{{ package.title_en }}</h2>
+    <p class="placement">{{ package.placement_en }}</p>
+    <p class="deliverable">{{ package.deliverable_en }}</p>
+    <p class="price">{{ package.payable }} {{ credit_label }}</p>
+    {% if user.is_authenticated %}
+    <form method="post" action="{% url 'cart_mutate' %}">
+      {% csrf_token %}
+      <input type="hidden" name="slug" value="{{ package.slug }}">
+      <input type="hidden" name="action" value="add">
+      <input type="hidden" name="next" value="{{ request.path }}">
+      <button class="btn btn-orange" type="submit" data-testid="add-{{ package.slug }}">Add to cart</button>
+    </form>
+    {% else %}
+    <a class="btn btn-orange" href="{% url 'demo_login' %}?next={{ request.path|urlencode }}">Sign in to add</a>
+    {% endif %}
+  </article>
+  {% empty %}
+  <p>No publishers match this filter.</p>
+  {% endfor %}
+</div>
+{% endblock %}

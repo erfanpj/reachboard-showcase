@@ -1,0 +1,66 @@
+:root {
+  --teal: #14b8a6;
+  --orange: #f97316;
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-bright: #243049;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --border: #334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Segoe UI, system-ui, sans-serif;
+  background: linear-gradient(165deg, #0f172a, #111827);
+  color: var(--text);
+  padding: 1rem;
+  max-width: 720px;
+  margin-inline: auto;
+}
+.banner {
+  border: 2px solid var(--orange);
+  background: #431407;
+  color: #ffedd5;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+.pkg-card {
+  background: var(--panel-bright);
+  border-radius: 10px;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  border: 1px solid #3d4f6d;
+}
+.channel { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--teal); font-weight: 800; }
+button, .btn {
+  background: var(--teal);
+  color: #042f2e;
+  border: 0;
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin: 0.25rem 0.25rem 0.25rem 0;
+}
+button.secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
+input {
+  background: #0b1220;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 0.45rem 0.6rem;
+  width: 100%;
+  margin: 0.35rem 0;
+}
+.total { color: var(--orange); font-weight: 800; }
+.compare { background: #172554; border-color: #2563eb; }
