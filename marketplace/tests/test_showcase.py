@@ -49,6 +49,26 @@ def test_cart_total_parity(seeded, client):
 
 
 @pytest.mark.django_db
+def test_stale_orm_instances_do_not_duplicate_history(seeded):
+    advertiser = seeded["advertiser"]
+    client = Client()
+    _login(client, advertiser, seeded["password"])
+    client.post(
+        reverse("cart_mutate"),
+        {"slug": "echo-weekly", "action": "add", "next": "/en/catalog/"},
+    )
+    client.post(reverse("checkout_campaign"))
+    campaign = Campaign.objects.get(advertiser=advertiser)
+    first = Campaign.objects.get(pk=campaign.pk)
+    stale = Campaign.objects.get(pk=campaign.pk)
+    submit_campaign(first, advertiser)
+    history_after_first = CampaignHistory.objects.filter(campaign=campaign).count()
+    assert history_after_first == 2
+    submit_campaign(stale, advertiser)
+    assert CampaignHistory.objects.filter(campaign=campaign).count() == history_after_first
+
+
+@pytest.mark.django_db
 def test_journey_submit_and_repeat(seeded, client):
     _login(client, seeded["advertiser"], seeded["password"])
     client.post(

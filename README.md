@@ -25,7 +25,7 @@ Self-contained **fictional** marketplace demo for portfolio review. Greenfield c
 
 ## Repeated submit semantics
 
-`POST /campaign/<id>/submit/` is safe to call multiple times: the first call transitions **draft → awaiting payment** and writes campaign + item history rows; later calls leave status unchanged and do **not** append duplicate history (HTTP 302 back to detail).
+`POST /campaign/<id>/submit/` is safe to call multiple times, including with stale in-memory `Campaign` instances: the server performs a conditional update on persisted **draft** status under `select_for_update`, writes history only when that update succeeds, and returns the current row otherwise (HTTP 302 back to detail). This prevents duplicate history rows from repeated or stale submits in one process; it is not a claim about distributed exactly-once execution.
 
 ## Run locally
 

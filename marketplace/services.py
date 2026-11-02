@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
+from django.utils import timezone
 
 from marketplace.fixtures_data import PACKAGES
 from marketplace.models import Campaign, CampaignHistory, CartLine, Package
@@ -83,6 +84,26 @@ def transition_campaign(campaign: Campaign, next_status: str, *, item=None) -> N
         )
 
 
+def _append_submit_history(campaign: Campaign, *, item_package) -> None:
+    previous = Campaign.Status.DRAFT
+    next_status = Campaign.Status.AWAITING_PAYMENT
+    CampaignHistory.objects.create(
+        campaign=campaign,
+        package=item_package,
+        from_status=previous,
+        to_status=next_status,
+        scope=CampaignHistory.Scope.CAMPAIGN,
+    )
+    if item_package is not None:
+        CampaignHistory.objects.create(
+            campaign=campaign,
+            package=item_package,
+            from_status=previous,
+            to_status=next_status,
+            scope=CampaignHistory.Scope.ITEM,
+        )
+
+
 @transaction.atomic
 def checkout_cart_to_campaign(user) -> Campaign:
     lines = cart_lines_for_user(user)
@@ -102,17 +123,34 @@ def checkout_cart_to_campaign(user) -> Campaign:
 @transaction.atomic
 def submit_campaign(campaign: Campaign, actor) -> Campaign:
     ensure_owner(campaign, actor)
-    if campaign.status == Campaign.Status.AWAITING_PAYMENT:
-        return campaign
-    if campaign.status != Campaign.Status.DRAFT:
-        raise ValidationError("Only draft campaigns can be submitted.")
-    item = campaign.items.select_related("package").first()
-    transition_campaign(
-        campaign,
-        Campaign.Status.AWAITING_PAYMENT,
-        item=item.package if item else None,
+    locked = (
+        Campaign.objects.select_for_update()
+        .filter(pk=campaign.pk, advertiser_id=actor.pk)
+        .first()
     )
-    return campaign
+    if locked is None:
+        raise PermissionDenied("Campaign belongs to another advertiser.")
+    if locked.status == Campaign.Status.AWAITING_PAYMENT:
+        return locked
+    if locked.status != Campaign.Status.DRAFT:
+        raise ValidationError("Only draft campaigns can be submitted.")
+
+    updated_rows = Campaign.objects.filter(
+        pk=locked.pk,
+        advertiser_id=actor.pk,
+        status=Campaign.Status.DRAFT,
+    ).update(status=Campaign.Status.AWAITING_PAYMENT, updated_at=timezone.now())
+
+    if updated_rows == 0:
+        locked.refresh_from_db()
+        if locked.status == Campaign.Status.AWAITING_PAYMENT:
+            return locked
+        raise ValidationError("Only draft campaigns can be submitted.")
+
+    locked.refresh_from_db()
+    item = locked.items.select_related("package").first()
+    _append_submit_history(locked, item_package=item.package if item else None)
+    return locked
 
 
 def seed_showcase() -> None:

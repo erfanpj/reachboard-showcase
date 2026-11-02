@@ -53,9 +53,23 @@ const PACKAGES = [
 
 let cart = [];
 let status = "empty cart";
+/** Frozen at draft review; unchanged by later cart edits until reset. */
+let campaignSnapshot = null;
 
-function cartTotal() {
-  return cart.reduce((sum, line) => sum + line.payable * line.qty, 0);
+function cartTotal(lines = cart) {
+  return lines.reduce((sum, line) => sum + line.payable * line.qty, 0);
+}
+
+function isSubmittedPhase() {
+  return status.includes("awaiting payment");
+}
+
+function isDraftPhase() {
+  return status.startsWith("draft campaign");
+}
+
+function cartEditingLocked() {
+  return isSubmittedPhase();
 }
 
 function renderCompare() {
@@ -73,6 +87,7 @@ function renderPackages(filter) {
   const q = (filter || "").trim().toLowerCase();
   const root = document.getElementById("packages");
   root.innerHTML = "";
+  const locked = cartEditingLocked();
   PACKAGES.filter(
     (p) =>
       !q ||
@@ -85,11 +100,18 @@ function renderPackages(filter) {
     div.innerHTML = `<p class="channel">${p.channel}</p><strong>${p.title}</strong>
       <p>${p.placement}</p><p>${p.deliverable}</p>
       <p class="total">${p.payable} ${CREDIT}</p>
-      <button type="button" data-add="${p.slug}">Add</button>
-      <button type="button" class="secondary" data-remove="${p.slug}">Remove</button>`;
+      <button type="button" data-add="${p.slug}" ${locked ? "disabled" : ""}>Add</button>
+      <button type="button" class="secondary" data-remove="${p.slug}" ${locked ? "disabled" : ""}>Remove</button>`;
     root.appendChild(div);
   });
-  root.querySelectorAll("[data-add]").forEach((btn) => {
+  if (locked) {
+    const note = document.createElement("p");
+    note.className = "muted";
+    note.textContent =
+      "Submitted campaign is locked. Reset the simulation to shop again.";
+    root.appendChild(note);
+  }
+  root.querySelectorAll("[data-add]:not([disabled])").forEach((btn) => {
     btn.addEventListener("click", () => {
       const pkg = PACKAGES.find((p) => p.slug === btn.dataset.add);
       const line = cart.find((l) => l.slug === pkg.slug);
@@ -98,7 +120,7 @@ function renderPackages(filter) {
       renderCart();
     });
   });
-  root.querySelectorAll("[data-remove]").forEach((btn) => {
+  root.querySelectorAll("[data-remove]:not([disabled])").forEach((btn) => {
     btn.addEventListener("click", () => {
       cart = cart.filter((l) => l.slug !== btn.dataset.remove);
       renderCart();
@@ -107,14 +129,29 @@ function renderPackages(filter) {
 }
 
 function renderCart() {
+  const snapBlock = document.getElementById("campaignSnapshot");
+  const liveBlock = document.getElementById("liveCartBlock");
+  if (campaignSnapshot && (isDraftPhase() || isSubmittedPhase())) {
+    snapBlock.hidden = false;
+    document.getElementById("snapshotTotal").textContent = `${campaignSnapshot.total} ${CREDIT}`;
+    document.getElementById("snapshotLines").innerHTML = campaignSnapshot.lines
+      .map((l) => `<li>${l.title} — ${l.payable} ${CREDIT} × ${l.qty}</li>`)
+      .join("");
+    liveBlock.hidden = isSubmittedPhase();
+  } else {
+    snapBlock.hidden = true;
+    liveBlock.hidden = false;
+  }
+
   const total = cartTotal();
   const count = cart.reduce((n, l) => n + l.qty, 0);
   document.getElementById("cartTotal").textContent = `Cart total: ${total} ${CREDIT} · ${count} item${count === 1 ? "" : "s"}`;
-  const ul = document.getElementById("cartLines");
-  ul.innerHTML = cart
+  document.getElementById("cartLines").innerHTML = cart
     .map((l) => `<li>${l.title} — ${l.payable} ${CREDIT} × ${l.qty}</li>`)
     .join("");
   document.getElementById("status").textContent = status;
+  document.getElementById("submit").disabled = !isDraftPhase();
+  document.getElementById("toDraft").disabled = isSubmittedPhase();
 }
 
 document.getElementById("filter").addEventListener("input", (e) => {
@@ -122,19 +159,34 @@ document.getElementById("filter").addEventListener("input", (e) => {
 });
 
 document.getElementById("toDraft").addEventListener("click", () => {
-  status = cart.length ? "draft campaign (simulated)" : "empty cart";
+  if (!cart.length) {
+    status = "empty cart";
+    campaignSnapshot = null;
+  } else {
+    campaignSnapshot = {
+      lines: cart.map((l) => ({ ...l })),
+      total: cartTotal(),
+    };
+    status = "draft campaign (simulated)";
+  }
   renderCart();
+  renderPackages(document.getElementById("filter").value);
 });
 
 document.getElementById("submit").addEventListener("click", () => {
-  if (status.startsWith("draft")) status = "awaiting payment (simulated)";
+  if (isDraftPhase() && campaignSnapshot) {
+    status = "awaiting payment (simulated)";
+  }
   renderCart();
+  renderPackages(document.getElementById("filter").value);
 });
 
 document.getElementById("reset").addEventListener("click", () => {
   cart = [];
+  campaignSnapshot = null;
   status = "empty cart";
   renderCart();
+  renderPackages(document.getElementById("filter").value);
 });
 
 renderCompare();

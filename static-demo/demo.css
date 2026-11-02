@@ -63,4 +63,6 @@ input {
   margin: 0.35rem 0;
 }
 .total { color: var(--orange); font-weight: 800; }
+.muted { color: var(--muted); font-size: 0.9rem; }
 .compare { background: #172554; border-color: #2563eb; }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
