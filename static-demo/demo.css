@@ -66,3 +66,5 @@ input {
 .muted { color: var(--muted); font-size: 0.9rem; }
 .compare { background: #172554; border-color: #2563eb; }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
+.sim-status { margin: 0.75rem 0; }
+.sim-actions { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.5rem; }

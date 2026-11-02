@@ -1,4 +1,5 @@
 import pytest
+from pathlib import Path
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.test import Client
@@ -211,3 +212,20 @@ def test_safe_local_path_rules():
 @pytest.mark.django_db
 def test_seed_creates_six_packages(seeded):
     assert Package.objects.count() == 6
+
+
+def test_static_demo_submit_reset_regression():
+    import subprocess
+    import sys
+
+    root = Path(__file__).resolve().parents[2]
+    script = root / "tools" / "verify_static_demo.mjs"
+    result = subprocess.run(
+        ["node", str(script)],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    assert result.returncode == 0, result.stderr or result.stdout
+    assert "STATIC_DEMO_OK" in result.stdout

@@ -130,18 +130,22 @@ function renderPackages(filter) {
 
 function renderCart() {
   const snapBlock = document.getElementById("campaignSnapshot");
-  const liveBlock = document.getElementById("liveCartBlock");
+  const shoppingPanel = document.getElementById("shoppingCartPanel");
+  const flowActions = document.getElementById("flowActions");
+  const resetBtn = document.getElementById("reset");
+
   if (campaignSnapshot && (isDraftPhase() || isSubmittedPhase())) {
     snapBlock.hidden = false;
     document.getElementById("snapshotTotal").textContent = `${campaignSnapshot.total} ${CREDIT}`;
     document.getElementById("snapshotLines").innerHTML = campaignSnapshot.lines
       .map((l) => `<li>${l.title} — ${l.payable} ${CREDIT} × ${l.qty}</li>`)
       .join("");
-    liveBlock.hidden = isSubmittedPhase();
   } else {
     snapBlock.hidden = true;
-    liveBlock.hidden = false;
   }
+
+  shoppingPanel.hidden = isSubmittedPhase();
+  flowActions.hidden = isSubmittedPhase();
 
   const total = cartTotal();
   const count = cart.reduce((n, l) => n + l.qty, 0);
@@ -152,6 +156,8 @@ function renderCart() {
   document.getElementById("status").textContent = status;
   document.getElementById("submit").disabled = !isDraftPhase();
   document.getElementById("toDraft").disabled = isSubmittedPhase();
+  resetBtn.hidden = false;
+  resetBtn.disabled = false;
 }
 
 document.getElementById("filter").addEventListener("input", (e) => {
@@ -185,8 +191,9 @@ document.getElementById("reset").addEventListener("click", () => {
   cart = [];
   campaignSnapshot = null;
   status = "empty cart";
+  document.getElementById("filter").value = "";
   renderCart();
-  renderPackages(document.getElementById("filter").value);
+  renderPackages("");
 });
 
 renderCompare();

@@ -21,12 +21,16 @@
     <p class="total">Campaign total: <span id="snapshotTotal">0</span> (locked at draft)</p>
     <ul id="snapshotLines"></ul>
   </div>
-  <div class="card" id="liveCartBlock">
-    <p class="total" id="cartTotal">Cart total: 0 RB credits · 0 items</p>
-    <ul id="cartLines"></ul>
-    <p>Status: <strong id="status">empty cart</strong></p>
-    <button type="button" id="toDraft">Review cart → draft</button>
-    <button type="button" id="submit">Submit for payment review</button>
+  <div class="card" id="simulationPanel">
+    <div id="shoppingCartPanel">
+      <p class="total" id="cartTotal">Cart total: 0 RB credits · 0 items</p>
+      <ul id="cartLines"></ul>
+    </div>
+    <p class="sim-status">Status: <strong id="status">empty cart</strong></p>
+    <div class="sim-actions" id="flowActions">
+      <button type="button" id="toDraft">Review cart → draft</button>
+      <button type="button" id="submit">Submit for payment review</button>
+    </div>
     <button type="button" class="secondary" id="reset">Reset simulation</button>
   </div>
   <script src="app.js"></script>
