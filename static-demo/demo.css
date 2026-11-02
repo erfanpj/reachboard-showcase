@@ -2,6 +2,7 @@
   --violet: #5b52e8;
   --indigo: #4338ca;
   --coral: #ff6b45;
+  --price-ink: #9a3412;
   --lime: #c4f542;
   --bg: #f6f4ff;
   --panel: #ffffff;
@@ -115,7 +116,8 @@ input {
   margin: 0.35rem 0 0;
   min-height: 44px;
 }
-.total { color: var(--coral); font-weight: 800; }
+.total, .price-ink { color: var(--price-ink); font-weight: 800; }
+.accent-coral { color: var(--coral); }
 .muted { color: var(--muted); font-size: 0.9rem; }
 .fine-print { font-size: 0.82rem; color: var(--muted); margin-top: 0.75rem; }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
@@ -124,6 +126,20 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 #cartLines, #snapshotLines { padding-left: 1.1rem; margin: 0.35rem 0; }
 @media (max-width: 768px) {
   .layout { grid-template-columns: 1fr; }
-  .cart-panel { order: -1; position: sticky; top: 0; z-index: 2; }
+  .cart-panel {
+    order: -1;
+    position: static;
+    z-index: 1;
+  }
+  .cart-panel .card {
+    padding: 0.55rem 0.75rem;
+    margin: 0.35rem 0 0.65rem;
+  }
+  #cartLines { max-height: 4.5rem; overflow: auto; font-size: 0.88rem; }
+  .sim-actions button { flex: 1 1 100%; }
   body { padding-top: 0.35rem; }
+}
+@media (max-width: 480px) {
+  #cartLines { display: none; }
+  .cart-panel .fine-print { margin-top: 0.35rem; }
 }

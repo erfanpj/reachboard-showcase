@@ -118,6 +118,8 @@ function addSlug(slug) {
   renderCart();
   renderPackages(document.getElementById("filter").value);
   renderCompare();
+  const btn = document.querySelector(`[data-add="${slug}"]:not([disabled])`);
+  if (btn) btn.focus({ preventScroll: true });
 }
 
 function renderPackages(filter) {

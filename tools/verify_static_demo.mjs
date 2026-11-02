@@ -15,7 +15,7 @@ fs.mkdirSync(path.dirname(mount), { recursive: true });
 fs.cpSync(demoDir, mount, { recursive: true });
 
 const BASE = "http://127.0.0.1:8793/reachboard-showcase/static-demo/";
-const server = spawn("python", ["-m", "http.server", "8793", "--directory", reviewRoot], {
+const server = spawn("python", ["-m", "http.server", "8793", "--bind", "127.0.0.1", "--directory", reviewRoot], {
   stdio: "ignore",
 });
 
@@ -175,6 +175,47 @@ async function main() {
     if (!String(afterReset.status).includes("empty cart")) throw new Error("not empty");
     if (!String(afterReset.cart).includes("0")) throw new Error("cart not zero");
     if (!afterReset.addEnabled) throw new Error("shopping still locked: " + JSON.stringify(afterReset));
+
+    async function assertNoCartOverlap(width, height, mobile) {
+      await send("Emulation.setDeviceMetricsOverride", {
+        width,
+        height,
+        deviceScaleFactor: 1,
+        mobile: !!mobile,
+      });
+      await send("Page.navigate", { url: BASE });
+      await new Promise((r) => setTimeout(r, 900));
+      await evalOk(`(() => {
+        document.getElementById('filter').value='';
+        document.getElementById('filter').dispatchEvent(new Event('input'));
+        document.querySelector('[data-add="echo-weekly"]').click();
+        document.querySelector('[data-add="northline-sound"]').click();
+      })()`);
+      const overlap = await evalOk(`(() => {
+        const btn = document.querySelector('[data-add="northline-sound"]');
+        const cart = document.getElementById('cart');
+        if (!btn || !cart) return true;
+        const br = btn.getBoundingClientRect();
+        const cr = cart.getBoundingClientRect();
+        const hit = br.bottom > cr.top && br.top < cr.bottom && br.right > cr.left && br.left < cr.right;
+        return hit;
+      })()`);
+      if (overlap) throw new Error(`cart overlaps add control at ${width}x${height}`);
+      const focusOk = await evalOk(`(() => {
+        const a = document.activeElement;
+        return a && a.matches && a.matches('[data-add]');
+      })()`);
+      if (!focusOk) throw new Error(`focus not on add control after click at ${width}x${height}`);
+    }
+
+    for (const [w, h, m] of [
+      [320, 640, true],
+      [375, 667, true],
+      [768, 900, false],
+      [1280, 720, false],
+    ]) {
+      await assertNoCartOverlap(w, h, m);
+    }
 
     ws.close();
     console.log("STATIC_DEMO_OK");
