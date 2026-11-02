@@ -45,9 +45,11 @@ Demo users: `demo_advertiser` / `demo_other` — password `reachboard-showcase-d
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-## Static simulation (GitHub Pages–ready)
+## Static simulation (GitHub Pages)
 
-See `static-demo/README.md`. Labelled **browser simulation** with the same six packages and credit prices; the Django service enforces ownership, CSRF, and transitions over HTTP.
+**Live browser fixture:** https://erfanpj.github.io/reachboard-showcase/
+
+Labelled **browser simulation** with the same six packages and credit prices; the Django service enforces ownership, CSRF, and transitions over HTTP. See `static-demo/README.md` for path notes.
 
 ## Browser evidence
 
