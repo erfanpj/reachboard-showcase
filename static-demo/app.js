@@ -82,12 +82,44 @@ function syncShoppingStatus() {
 function renderCompare() {
   const slugs = ["echo-weekly", "northline-sound"];
   const row = document.getElementById("compareRow");
+  const locked = cartEditingLocked();
   row.innerHTML = slugs
     .map((slug) => {
       const p = PACKAGES.find((x) => x.slug === slug);
-      return `<div class="pkg-card"><p class="channel">${p.channel}</p><strong>${p.title}</strong><p>${p.placement}</p><p>${p.deliverable}</p><p class="total">${p.payable} ${CREDIT}</p></div>`;
+      return `<div class="pkg-card"><p class="channel">${p.channel}</p><strong>${p.title}</strong><p>${p.placement}</p><p class="total">${p.payable} ${CREDIT}</p>
+        <button type="button" data-add="${p.slug}" ${locked ? "disabled" : ""}>Add ${p.title}</button>
+        <button type="button" class="secondary" data-remove="${p.slug}" ${locked ? "disabled" : ""}>Remove</button></div>`;
     })
     .join("");
+  wireCartButtons(row);
+}
+
+function wireCartButtons(root) {
+  root.querySelectorAll("[data-add]:not([disabled])").forEach((btn) => {
+    btn.addEventListener("click", () => addSlug(btn.dataset.add));
+  });
+  root.querySelectorAll("[data-remove]:not([disabled])").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      cart = cart.filter((l) => l.slug !== btn.dataset.remove);
+      syncShoppingStatus();
+      renderCart();
+      renderPackages(document.getElementById("filter").value);
+      renderCompare();
+    });
+  });
+}
+
+function addSlug(slug) {
+  const pkg = PACKAGES.find((p) => p.slug === slug);
+  const line = cart.find((l) => l.slug === pkg.slug);
+  if (line) line.qty += 1;
+  else cart.push({ ...pkg, qty: 1 });
+  syncShoppingStatus();
+  renderCart();
+  renderPackages(document.getElementById("filter").value);
+  renderCompare();
+  const btn = document.querySelector(`[data-add="${slug}"]:not([disabled])`);
+  if (btn) btn.focus({ preventScroll: true });
 }
 
 function renderPackages(filter) {
@@ -107,7 +139,7 @@ function renderPackages(filter) {
     div.innerHTML = `<p class="channel">${p.channel}</p><strong>${p.title}</strong>
       <p>${p.placement}</p><p>${p.deliverable}</p>
       <p class="total">${p.payable} ${CREDIT}</p>
-      <button type="button" data-add="${p.slug}" ${locked ? "disabled" : ""}>Add</button>
+      <button type="button" data-add="${p.slug}" ${locked ? "disabled" : ""}>Add ${p.title}</button>
       <button type="button" class="secondary" data-remove="${p.slug}" ${locked ? "disabled" : ""}>Remove</button>`;
     root.appendChild(div);
   });
@@ -118,23 +150,7 @@ function renderPackages(filter) {
       "Submitted campaign is locked. Reset the simulation to shop again.";
     root.appendChild(note);
   }
-  root.querySelectorAll("[data-add]:not([disabled])").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const pkg = PACKAGES.find((p) => p.slug === btn.dataset.add);
-      const line = cart.find((l) => l.slug === pkg.slug);
-      if (line) line.qty += 1;
-      else cart.push({ ...pkg, qty: 1 });
-      syncShoppingStatus();
-      renderCart();
-    });
-  });
-  root.querySelectorAll("[data-remove]:not([disabled])").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      cart = cart.filter((l) => l.slug !== btn.dataset.remove);
-      syncShoppingStatus();
-      renderCart();
-    });
-  });
+  wireCartButtons(root);
 }
 
 function renderCart() {
@@ -186,6 +202,7 @@ document.getElementById("toDraft").addEventListener("click", () => {
   }
   renderCart();
   renderPackages(document.getElementById("filter").value);
+  renderCompare();
 });
 
 document.getElementById("submit").addEventListener("click", () => {
@@ -194,6 +211,7 @@ document.getElementById("submit").addEventListener("click", () => {
   }
   renderCart();
   renderPackages(document.getElementById("filter").value);
+  renderCompare();
 });
 
 document.getElementById("reset").addEventListener("click", () => {
@@ -203,6 +221,7 @@ document.getElementById("reset").addEventListener("click", () => {
   document.getElementById("filter").value = "";
   renderCart();
   renderPackages("");
+  renderCompare();
 });
 
 renderCompare();
