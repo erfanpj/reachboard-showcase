@@ -72,6 +72,13 @@ function cartEditingLocked() {
   return isSubmittedPhase();
 }
 
+function syncShoppingStatus() {
+  if (isDraftPhase() || isSubmittedPhase()) {
+    return;
+  }
+  status = cart.length ? "cart ready for review (simulated)" : "empty cart";
+}
+
 function renderCompare() {
   const slugs = ["echo-weekly", "northline-sound"];
   const row = document.getElementById("compareRow");
@@ -117,12 +124,14 @@ function renderPackages(filter) {
       const line = cart.find((l) => l.slug === pkg.slug);
       if (line) line.qty += 1;
       else cart.push({ ...pkg, qty: 1 });
+      syncShoppingStatus();
       renderCart();
     });
   });
   root.querySelectorAll("[data-remove]:not([disabled])").forEach((btn) => {
     btn.addEventListener("click", () => {
       cart = cart.filter((l) => l.slug !== btn.dataset.remove);
+      syncShoppingStatus();
       renderCart();
     });
   });

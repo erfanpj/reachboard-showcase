@@ -99,6 +99,16 @@ async function main() {
     await evalOk(`(() => {
       document.querySelector('[data-add="echo-weekly"]').click();
     })()`);
+    const afterEcho = await evalOk(`(() => ({
+      status: document.getElementById('status').textContent,
+      cartTotal: document.getElementById('cartTotal').textContent,
+    }))()`);
+    if (String(afterEcho.status).includes("empty cart")) {
+      throw new Error("pre-draft status must not say empty cart: " + JSON.stringify(afterEcho));
+    }
+    if (!String(afterEcho.cartTotal).includes("35")) {
+      throw new Error("echo cart total missing: " + JSON.stringify(afterEcho));
+    }
     await evalOk(`(() => {
       document.getElementById('filter').value='Podcast';
       document.getElementById('filter').dispatchEvent(new Event('input'));
