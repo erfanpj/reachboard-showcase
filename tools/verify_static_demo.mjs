@@ -80,6 +80,12 @@ async function main() {
       });
     await send("Page.enable");
     await send("Runtime.enable");
+    await send("Emulation.setDeviceMetricsOverride", {
+      width: 1280,
+      height: 720,
+      deviceScaleFactor: 1,
+      mobile: false,
+    });
     const evalOk = async (expression) => {
       const res = await send("Runtime.evaluate", {
         expression,
@@ -91,6 +97,22 @@ async function main() {
     };
     await send("Page.navigate", { url: BASE });
     await new Promise((r) => setTimeout(r, 900));
+
+    const firstAddY = await evalOk(`(() => {
+      const b = document.querySelector('[data-add="echo-weekly"]');
+      if (!b) return -1;
+      return Math.round(b.getBoundingClientRect().top);
+    })()`);
+    if (firstAddY < 0 || firstAddY > 680) {
+      throw new Error("first Add control not visible in 720px viewport (y=" + firstAddY + ")");
+    }
+    const cartY = await evalOk(`(() => {
+      const el = document.getElementById('cartTotal');
+      return el ? Math.round(el.getBoundingClientRect().top) : -1;
+    })()`);
+    if (cartY < 0 || cartY > 680) {
+      throw new Error("cart summary not visible in 720px viewport (y=" + cartY + ")");
+    }
 
     await evalOk(`(() => {
       document.getElementById('filter').value='Echo';

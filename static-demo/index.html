@@ -7,32 +7,59 @@
   <link rel="stylesheet" href="demo.css">
 </head>
 <body>
-  <p class="banner">Browser simulation only — fictional RB credits and packages. No live backend, login, or payment. Run the local Django service for HTTP-tested ownership and status rules.</p>
-  <h1>Reachboard static demo</h1>
-  <p>Filter packages, compare newsletter vs podcast, add/remove lines, then walk draft → submit → reset. Parity: Echo-only <span class="total">35</span>; Northline + Echo <span class="total">75</span>.</p>
-  <label>Filter <input id="filter" type="search" placeholder="Try Echo or Podcast"></label>
-  <section class="card compare" aria-labelledby="cmp">
-    <h2 id="cmp">Quick compare</h2>
-    <div id="compareRow"></div>
-  </section>
-  <div id="packages"></div>
-  <div class="card" id="campaignSnapshot" hidden>
-    <h2>Campaign under review</h2>
-    <p class="total">Campaign total: <span id="snapshotTotal">0</span> (locked at draft)</p>
-    <ul id="snapshotLines"></ul>
-  </div>
-  <div class="card" id="simulationPanel">
-    <div id="shoppingCartPanel">
-      <p class="total" id="cartTotal">Cart total: 0 RB credits · 0 items</p>
-      <ul id="cartLines"></ul>
+  <a class="skip-link" href="#cart">Skip to cart</a>
+  <header class="masthead">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">R</span>
+      <div>
+        <p class="brand-name">Reachboard</p>
+        <p class="brand-tag">Compare packages · build a draft campaign</p>
+      </div>
     </div>
-    <p class="sim-status">Status: <strong id="status">empty cart</strong></p>
-    <div class="sim-actions" id="flowActions">
-      <button type="button" id="toDraft">Review cart → draft</button>
-      <button type="button" id="submit">Submit for payment review</button>
-    </div>
-    <button type="button" class="secondary" id="reset">Reset simulation</button>
-  </div>
+    <p class="banner">Browser simulation only — fictional RB credits. No live backend, login, or payment.</p>
+  </header>
+
+  <main class="layout">
+    <section class="catalog" aria-labelledby="catalog-heading">
+      <h1 id="catalog-heading">Choose placements</h1>
+      <p class="lede">Echo-only costs <span class="total">35</span> RB credits; Echo plus Northline Sound costs <span class="total">75</span>.</p>
+      <label class="filter-label">Search packages
+        <input id="filter" type="search" placeholder="Try Echo or Podcast" autocomplete="off">
+      </label>
+
+      <section class="card compare" aria-labelledby="cmp">
+        <h2 id="cmp">Newsletter vs podcast</h2>
+        <p class="muted">Add straight from the comparison, or open the full cards below.</p>
+        <div id="compareRow" class="compare-row"></div>
+        <p><a href="#packages">Browse all packages ↓</a></p>
+      </section>
+
+      <div id="packages" tabindex="-1"></div>
+
+      <div class="card" id="campaignSnapshot" hidden>
+        <h2>Campaign under review</h2>
+        <p class="total">Campaign total: <span id="snapshotTotal">0</span> (locked at draft)</p>
+        <ul id="snapshotLines"></ul>
+      </div>
+    </section>
+
+    <aside class="cart-panel" id="cart" aria-labelledby="cart-heading">
+      <div class="card" id="simulationPanel">
+        <h2 id="cart-heading">Your cart</h2>
+        <div id="shoppingCartPanel">
+          <p class="total" id="cartTotal">Cart total: 0 RB credits · 0 items</p>
+          <ul id="cartLines"></ul>
+        </div>
+        <p class="sim-status">Status: <strong id="status" aria-live="polite" aria-atomic="true">empty cart</strong></p>
+        <div class="sim-actions" id="flowActions">
+          <button type="button" id="toDraft">Review cart → draft</button>
+          <button type="button" id="submit">Submit for payment review</button>
+        </div>
+        <button type="button" class="secondary" id="reset">Reset simulation</button>
+        <p class="fine-print"><a href="#catalog-heading">Back to catalogue</a> · Simulated credits only.</p>
+      </div>
+    </aside>
+  </main>
   <script src="app.js"></script>
 </body>
 </html>
