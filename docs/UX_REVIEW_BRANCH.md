@@ -1,7 +1,7 @@
-# Private UX branch (not deployed)
+# Reachboard static UX release (2026-11-02)
 
-Branch `portfolio/public-ux-2026-11` revises only `static-demo/` for recruiter-facing usability.
+Grok **ACCEPT** on candidate `35c1cc9c33f13eca5114284fc809b409d1cee614` (PR #1). Public `main` merge commit **`c8efa42d2925e62567e4b35116a4c616b438aa75`**.
 
-- **Published main:** `13a97df5dbd72bbc7dfc994c49cf60ce4a2ecd20` (GitHub Pages demo unchanged).
-- **Evidence:** `node tools/verify_static_demo.mjs` and screenshots under `docs/evidence-ux-static/`.
-- **Review:** independent Grok pass required before merge or Pages update.
+- **Live demo:** https://erfanpj.github.io/reachboard-showcase/ (Pages run **41467068256** success)
+- **Scope:** `static-demo/index.html`, `app.js`, `demo.css` only on Pages
+- **Evidence (repo only):** `docs/evidence-ux-static/` — not deployed
